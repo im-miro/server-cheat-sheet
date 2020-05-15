@@ -19,9 +19,9 @@ sudo vim /etc/ssh/sshd_config
 ```
 
 vimの部分はお好きなエディタに変更可能
-(vim使えるようになるといいことあるかも)
+~~(vim使えるようになるといいことあるかも)~~ ←宗教勧誘はおやめください
 
-```
+```sh
 #       $OpenBSD: sshd_config,v 1.101 2017/03/14 07:19:07 djm Exp $                                               
 
 # This is the sshd server system-wide configuration file.  See                                                    
@@ -39,22 +39,28 @@ Port 22
 
 上記は設定ファイルの一部です＃はコメントなので、先頭にコメントがついているものは非有効化されている項目です.
 
-#を外すことで設定が有効化されます。
+
+\#を外すことで設定が有効化されます。
+
+>**※注意**
+設定をコメントアウトしている場合,非有効化ではなくデフォルトの値が適用されている場合があります。正しい設定であることを確認してください。
 
 上記の最下行はPort 22となっています、これはsshで接続するポートのことです。
 
 標準の22番から1023以降の自分で決めた番号に変更することで被攻撃確率を下げることができます。
 
-```
-Port 32453
+*注釈:0~1023はWelknownPort(予約済み番号)と呼ばれ自由に使用することができない。推奨値は49152\~65535*
+
+```sh
+Port 50000 #1024~65535から適当な数字
 ```
 
 ↑変更後
 
 つづきの設定
 
-```
-Port 32453
+```sh
+Port 50000
 #AddressFamily any
 #ListenAddress 0.0.0.0
 #ListenAddress ::
@@ -87,13 +93,13 @@ PubkeyAuthentication no
 
 キー登録後↓
 
-```
+```sh
 PubkeyAuthentication yes
 ```
 
 つづきの設定
 
-```
+```sh
 PubkeyAuthentication yes
 
 # Expect .ssh/authorized_keys2 to be disregarded by default in future.
@@ -120,13 +126,13 @@ PasswordAuthentication yes
 
 基本的にパスワード認証は危険なのでnoに変えましょう
 
-```
+```sh
 PasswordAuthentication no
 ```
 
 つづきの設定
 
-```
+```sh
 PasswordAuthentication no
 #PermitEmptyPasswords no
 
@@ -139,11 +145,11 @@ ChallengeResponseAuthenticationはPAM使わないひとにはあまり関係な�
 
 PAMは話が長くなるので割愛します。
 
-```
+```sh
 ChallengeResponseAuthentication no
 ```
 
-```
+```sh
 ChallengeResponseAuthentication no
 
 # Kerberos options
@@ -171,13 +177,13 @@ UsePAM yes
 ```
 
 PAMは使わないのでnoにしましょう
-```
+```sh
 UsePAM no
 ```
 
 つづきの設定
 
-```
+```sh
 UsePAM no
 
 #AllowAgentForwarding yes
@@ -187,7 +193,7 @@ X11Forwarding yes
 ```
 X11Forward.....はGUI画面転送に関する設定です、GUIの画面は使わないのでnoにしましょう。
 
-```
+```sh
 X11Forwarding no
 ```
 
@@ -195,7 +201,7 @@ X11Forwarding no
 
 ただ以下のコメントアウトが外れていると上手くいかないこともあるので適宜#をつけてコメントアウトしましょう。
 
-```
+```sh
 # Kerberos options
 #KerberosAuthentication no
 #KerberosOrLocalPasswd yes
@@ -217,19 +223,19 @@ X11Forwarding no
 ここではinstallされているOSがubuntuとしてportの開け方を解説します。(ufw使用)
 
 まずufwを有効化します。ufw（Uncomplicated FireWall）は、ファイアウォールの設定を行うコマンドです。
-```
+```sh
 $ sudo ufw enable
 ```
 
 開くポートを指定します
 
-```
+```sh
 $ sudo ufw allow "自分が決めたポート番号"/tcp
 ```
 
 設定をリロードしてポート開放します。
 
-```
+```sh
 $ sudo ufw reload
 ```
 
@@ -243,7 +249,7 @@ $ sudo ufw reload
 
 #### 登録場所
 
-```
+```sh
 /home/"user名"/.ssh/authrized_keys
 ```
 
@@ -251,7 +257,7 @@ $ sudo ufw reload
 
 方法1
 
-```
+```sh
 $ cd /home/"user名"/.ssh
 $ echo "公開鍵の中身" >> authorized_keys
 ```
@@ -260,7 +266,7 @@ $ echo "公開鍵の中身" >> authorized_keys
 
 公開鍵を転送後
 
-```
+```sh
 $ cd /home/"user名"/.ssh
 $ cat '公開鍵のパス' >> authorized_keys
 ```
@@ -268,19 +274,19 @@ $ cat '公開鍵のパス' >> authorized_keys
 
 ssh-copy-id (localでsshが使える場合、localでコマンド実行)
 
-```
+```sh
 ssh-copy-id -i '公開鍵のパス' " ユーザ名"@"ホスト名"
 ```
 
 #### 公開鍵の権限を変更する（パーミッション変更）
 
-```
+```sh
 $ sudo chmod 600 authorized_keys
 ```
 
 #### 設定をsshdサービスに読み込ませるために再起動
 
-```
+```sh
 $ sudo systemctl restart sshd
 ```
 
@@ -288,12 +294,12 @@ $ sudo systemctl restart sshd
 
 パーミッション確認できるコマンド（一例）
 
-```
+```sh
 $ ls -la
 ```
 
 
-```
+```sh
 drwxr-xr-x 30 hoge staff  4096 May 13 08:48 certbot
 ```
 
